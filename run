@@ -1,0 +1,2 @@
+# shell script to build and run the go application
+go build main.go && ./main
