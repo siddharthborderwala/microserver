@@ -14,16 +14,14 @@ import (
 func main() {
 	// initialize a custom logger
 	// normally, we want to output the logs in a file, but for now we are using os.Stdout
-	l := log.New(os.Stdout, "api:  ", log.LstdFlags)
+	l := log.New(os.Stdout, "API:  ", log.LstdFlags)
 
 	// initialize all the handlers
-	helloHandler := handlers.NewHello(l)
-	goodbyeHandler := handlers.NewGoodBye(l)
+	productHandler := handlers.NewProduct(l)
 
 	// create a custom servemux (requests multiplexer)
 	sm := http.NewServeMux()
-	sm.Handle("/", helloHandler)
-	sm.Handle("/goodbye", goodbyeHandler)
+	sm.Handle("/", productHandler)
 
 	// we create our own server to configure stuff like timeouts
 	s := &http.Server{
@@ -42,7 +40,7 @@ func main() {
 		}
 	}()
 
-	l.Println("Server listening on :6969")
+	l.Println("Server listening on :9090")
 
 	// we create a channel, that pipes the os signals to sigChan
 	sigChan := make(chan os.Signal)
