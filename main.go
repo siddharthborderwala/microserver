@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,6 +13,8 @@ import (
 )
 
 func main() {
+	// seed random
+	rand.Seed(time.Now().UnixNano())
 	// initialize a custom logger
 	// normally, we want to output the logs in a file, but for now we are using os.Stdout
 	l := log.New(os.Stdout, "API:  ", log.LstdFlags)
