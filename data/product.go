@@ -4,20 +4,36 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"math"
 	"math/rand"
+	"regexp"
 	"time"
+
+	"github.com/go-playground/validator"
 )
 
 type Product struct {
 	ID          string  `json:"id"`
-	Name        string  `json:"name"`
+	Name        string  `json:"name" validate:"required"`
 	Description string  `json:"description"`
-	Price       float32 `json:"price"`
-	SKU         string  `json:"sku"`
+	Price       float32 `json:"price" validate:"required,gt=0"`
+	SKU         string  `json:"sku" validate:"required,sku"`
 	CreatedOn   string  `json:"-"`
 	UpdatedOn   string  `json:"-"`
 	DeletedOn   string  `json:"-"`
+}
+
+// validate method on *Product
+func (p *Product) Validate() error {
+	validate := validator.New()
+	// custom validator
+	validate.RegisterValidation("sku", ValidateSKU)
+
+	return validate.Struct(p)
+}
+
+func ValidateSKU(fl validator.FieldLevel) bool {
+	re := regexp.MustCompile("^(([a-zA-Z]{3}-){2}[a-zA-Z]{3})$")
+	return re.FindString(fl.Field().String()) != ""
 }
 
 // implement fromJSON func
@@ -35,23 +51,15 @@ func (p *Products) ToJSON(w io.Writer) error {
 	return e.Encode(p)
 }
 
-const letterBytes = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
-func RandStringBytes() string {
-	b := make([]byte, 8)
-	for i := range b {
-		b[i] = letterBytes[rand.Intn(len(letterBytes))]
-	}
-	return string(b)
-}
+const characters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 func generateId() string {
-	rand.Seed(time.Now().UnixNano())
-	id := make([]byte, 8)
-	for i := 0; i < 8; i++ {
-		id[i] = byte(99 + math.Floor(rand.Float64()*26))
+	b := make([]byte, 8)
+	size := len(characters)
+	for i := range b {
+		b[i] = characters[rand.Intn(size)]
 	}
-	return string(id)
+	return string(b)
 }
 
 // dummy products list
