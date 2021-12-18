@@ -1,0 +1,129 @@
+{
+  "swagger": "2.0",
+  "info": {},
+  "paths": {
+    "/products": {
+      "get": {
+        "description": "returns a list of products",
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "products"
+        ],
+        "operationId": "listProducts",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/productsResponse"
+          }
+        }
+      },
+      "post": {
+        "description": "returns the created product",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "products"
+        ],
+        "operationId": "createProduct",
+        "responses": {
+          "201": {
+            "$ref": "#/responses/productResponse"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "put": {
+        "description": "updates the product",
+        "tags": [
+          "products"
+        ],
+        "operationId": "updateProduct",
+        "parameters": [
+          {
+            "pattern": "[a-zA-Z]{8}",
+            "type": "string",
+            "x-go-name": "ID",
+            "description": "The id of the product to update",
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "204": {
+            "$ref": "#/responses/noContent"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Product": {
+      "description": "Product defines the structure of an API product",
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "description": {
+          "description": "the description of the product\n\nrequire: true",
+          "type": "string",
+          "minLength": 5,
+          "x-go-name": "Description"
+        },
+        "id": {
+          "description": "the id for the product",
+          "type": "string",
+          "pattern": "[a-zA-Z]{8}",
+          "x-go-name": "ID"
+        },
+        "name": {
+          "description": "the name of the product\n\nrequire: true",
+          "type": "string",
+          "minLength": 2,
+          "x-go-name": "Name"
+        },
+        "price": {
+          "description": "the price of the product\n\nrequire: true",
+          "type": "number",
+          "format": "float",
+          "minimum": 0,
+          "x-go-name": "Price"
+        },
+        "sku": {
+          "description": "the SKU of the product\n\nrequire: true",
+          "type": "string",
+          "pattern": "^(([a-zA-Z]{3}-){2}[a-zA-Z]{3})$",
+          "x-go-name": "SKU"
+        }
+      },
+      "x-go-package": "microserver/data"
+    }
+  },
+  "responses": {
+    "noContent": {
+      "description": ""
+    },
+    "productResponse": {
+      "description": "A single products in the response",
+      "schema": {
+        "$ref": "#/definitions/Product"
+      }
+    },
+    "productsResponse": {
+      "description": "A list of products in the response",
+      "schema": {
+        "type": "array",
+        "items": {
+          "$ref": "#/definitions/Product"
+        }
+      }
+    }
+  }
+}

@@ -11,15 +11,37 @@ import (
 	"github.com/go-playground/validator"
 )
 
+// Product defines the structure of an API product
+// swagger:model
 type Product struct {
-	ID          string  `json:"id"`
-	Name        string  `json:"name" validate:"required"`
-	Description string  `json:"description"`
-	Price       float32 `json:"price" validate:"required,gt=0"`
-	SKU         string  `json:"sku" validate:"required,sku"`
-	CreatedOn   string  `json:"-"`
-	UpdatedOn   string  `json:"-"`
-	DeletedOn   string  `json:"-"`
+	// the id for the product
+	//
+	// required: true
+	// pattern: [a-zA-Z]{8}
+	ID string `json:"id"`
+	// the name of the product
+	//
+	// require: true
+	// minLength: 2
+	Name string `json:"name" validate:"required"`
+	// the description of the product
+	//
+	// require: true
+	// minLength: 5
+	Description string `json:"description"`
+	// the price of the product
+	//
+	// require: true
+	// min: 0
+	Price float32 `json:"price" validate:"required,gt=0"`
+	// the SKU of the product
+	//
+	// require: true
+	// pattern: ^(([a-zA-Z]{3}-){2}[a-zA-Z]{3})$
+	SKU       string `json:"sku" validate:"required,sku"`
+	CreatedOn string `json:"-"`
+	UpdatedOn string `json:"-"`
+	DeletedOn string `json:"-"`
 }
 
 // validate method on *Product

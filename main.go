@@ -11,6 +11,7 @@ import (
 
 	"microserver/handlers"
 
+	"github.com/go-openapi/runtime/middleware"
 	"github.com/gorilla/mux"
 )
 
@@ -22,24 +23,30 @@ func main() {
 	logger := log.New(os.Stdout, "API:  ", log.LstdFlags)
 
 	// initialize all the handlers
-	productHandler := handlers.NewProduct(logger)
+	productsHandler := handlers.NewProduct(logger)
 
 	// create a custom servemux (requests multiplexer)
 	sm := mux.NewRouter()
 
 	// create a get router
 	getRouter := sm.Methods(http.MethodGet).Subrouter()
-	getRouter.HandleFunc("/products", productHandler.GetProducts)
+	getRouter.HandleFunc("/products", productsHandler.GetProducts)
 
 	// create a put router
 	putRouter := sm.Methods(http.MethodPut).Subrouter()
-	putRouter.Use(productHandler.MiddlewareProductValidation)
-	putRouter.HandleFunc("/products/{id:[a-zA-Z]{8}}", productHandler.UpdateProduct)
+	putRouter.Use(productsHandler.MiddlewareProductValidation)
+	putRouter.HandleFunc("/products/{id:[a-zA-Z]{8}}", productsHandler.UpdateProduct)
 
 	// create a post router
 	postRouter := sm.Methods(http.MethodPost).Subrouter()
-	postRouter.Use(productHandler.MiddlewareProductValidation)
-	postRouter.HandleFunc("/products", productHandler.AddProduct)
+	postRouter.Use(productsHandler.MiddlewareProductValidation)
+	postRouter.HandleFunc("/products", productsHandler.AddProduct)
+
+	options := middleware.RedocOpts{SpecURL: "/swagger.json"}
+	sh := middleware.Redoc(options, nil)
+
+	getRouter.Handle("/docs", sh)
+	getRouter.Handle("/swagger.json", http.FileServer(http.Dir("./")))
 
 	// we create our own server to configure stuff like timeouts
 	s := &http.Server{
