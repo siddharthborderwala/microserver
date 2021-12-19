@@ -79,6 +79,7 @@ func NewProduct(l *log.Logger) *Products {
 // get products list
 func (h *Products) GetProducts(w http.ResponseWriter, r *http.Request) {
 	lp := data.GetProducts()
+	w.Header().Set("content-type", "application/json")
 	err := lp.ToJSON(w)
 	if err != nil {
 		http.Error(w, "Encoding error", http.StatusInternalServerError)
